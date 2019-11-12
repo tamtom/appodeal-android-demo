@@ -3,9 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.appodeal.test">
 
-    <!-- Required, because MoPub SDK minSdkVersion (16) conflicts with Appodeal SDK minSdkVersion (14) -->
-    <uses-sdk tools:overrideLibrary="com.mopub.mobileads,com.mopub.mobileads.banner,com.mopub.mobileads.rewarded_video,com.mopub.mobileads.interstitial,com.mopub.mobileads.native_video,com.mopub.mobileads.native_static,com.mopub.mobileads.base" />
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!--optional-->
@@ -23,7 +20,6 @@
         android:required="false" />
 
     <application
-        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -31,7 +27,13 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning,UnusedAttribute">
 
-        <activity android:name=".SplashActivity">
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
+        <activity
+            android:name=".SplashActivity"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

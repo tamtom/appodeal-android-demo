@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -77,7 +78,7 @@ public class NativeActivity extends FragmentActivity {
             }
         });
 
-        nativeAdapter = new NativeAdapter(new ArrayList<Integer>());
+        nativeAdapter = new NativeAdapter(new ArrayList<>());
         appodealWrapperAdapter = new AppodealWrapperAdapter(nativeAdapter, 2, nativeTemplateType);
 
         linearLayoutManager = new LinearLayoutManager(this);
@@ -88,7 +89,7 @@ public class NativeActivity extends FragmentActivity {
         rvNative.setLayoutManager(linearLayoutManager);
         rvNative.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
                 if (dy > 0) {
