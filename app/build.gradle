@@ -43,9 +43,10 @@ repositories {
 dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
-    // Requesting Consent from European Users
-    // https://developers.google.com/admob/android/eu-consent
-    implementation 'com.google.android.ads.consent:consent-library:1.0.8'
+
+    // Stack ConsentManager (required for requesting Consent from European Users)
+    implementation 'com.explorestack:consent:1.0.1'
+    implementation 'com.google.android.gms:play-services-ads-identifier:15.0.0'
 
     implementation 'com.appodeal.ads:sdk:2.6.2.0'
     implementation 'com.appodeal.ads.sdk.networks:a4g:2.6.0.1'    // optional network

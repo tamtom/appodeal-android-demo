@@ -18,9 +18,11 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -36,6 +38,11 @@ import com.appodeal.ads.utils.Log;
 import com.appodeal.test.layout.AdTypeViewPager;
 import com.appodeal.test.layout.HorizontalNumberPicker;
 import com.appodeal.test.layout.SlidingTabLayout;
+import com.explorestack.consent.Consent;
+import com.explorestack.consent.ConsentForm;
+import com.explorestack.consent.ConsentFormListener;
+import com.explorestack.consent.ConsentManager;
+import com.explorestack.consent.exception.ConsentManagerException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +55,10 @@ public class MainActivity extends FragmentActivity {
     private List<NativeAd> nativeAds = new ArrayList<>();
     String placementName = "default";
     boolean consent;
+
+    private Switch consentSwitch;
+    @Nullable
+    private ConsentForm consentForm;
 
     public enum BannerPosition {
         BANNER(Appodeal.BANNER), BOTTOM(Appodeal.BANNER_BOTTOM), TOP(Appodeal.BANNER_TOP), VIEW(Appodeal.BANNER_VIEW);
@@ -95,7 +106,23 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        consent = getIntent().getBooleanExtra(CONSENT, false);
+        if (savedInstanceState == null) {
+            consent = getIntent().getBooleanExtra(CONSENT, false);
+        } else {
+            Consent.Status consentStatus = ConsentManager.getInstance(this).getConsentStatus();
+            consent = consentStatus == Consent.Status.PERSONALIZED
+                    || consentStatus == Consent.Status.PARTLY_PERSONALIZED;
+        }
+        consentSwitch = findViewById(R.id.consentSwitch);
+        consentSwitch.setChecked(consent);
+        consentSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (buttonView.isPressed()) {
+                    showUpdateConsentForm();
+                }
+            }
+        });
 
         android.util.Log.d("Appodeal", "Consent: " + consent);
 
@@ -668,6 +695,50 @@ public class MainActivity extends FragmentActivity {
             Bundle args = getArguments();
             int layoutId = args.getInt("layout");
             return inflater.inflate(layoutId, container, false);
+        }
+    }
+
+    // Displaying ConsentManger Consent request form
+    public void showUpdateConsentForm() {
+        if (consentForm == null) {
+            consentForm = new ConsentForm.Builder(this)
+                    .withListener(new ConsentFormListener() {
+                        @Override
+                        public void onConsentFormLoaded() {
+                            // Show ConsentManager Consent request form
+                            consentForm.showAsActivity();
+                        }
+
+                        @Override
+                        public void onConsentFormError(ConsentManagerException error) {
+                            Toast.makeText(
+                                    MainActivity.this,
+                                    "Consent form error: " + error.getReason(),
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                        }
+
+                        @Override
+                        public void onConsentFormOpened() {
+                            //ignore
+                        }
+
+                        @Override
+                        public void onConsentFormClosed(Consent consent) {
+                            boolean hasConsent = consent.getStatus() == Consent.Status.PERSONALIZED;
+                            consentSwitch.setChecked(hasConsent);
+                            // Update local Consent value with resolved Consent value
+                            MainActivity.this.consent = hasConsent;
+                            // Update Appodeal SDK Consent value with resolved Consent value
+                            Appodeal.updateConsent(hasConsent);
+                        }
+                    }).build();
+        }
+        // If Consent request form is already loaded, then we can display it, otherwise, we should load it first
+        if (consentForm.isLoaded()) {
+            consentForm.showAsActivity();
+        } else {
+            consentForm.load();
         }
     }
 }
