@@ -54,4 +54,6 @@ dependencies {
     implementation 'com.appodeal.ads.sdk.networks:flurry:2.6.5.1' // optional network
     implementation 'com.appodeal.ads.sdk.networks:mopub:2.6.5.1'  // optional network
     implementation 'com.appodeal.ads.sdk.networks:fyber:2.6.5.1'  // optional network
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.4'
+
 }

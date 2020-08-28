@@ -547,6 +547,10 @@ public class MainActivity extends FragmentActivity {
         Appodeal.destroy(Appodeal.BANNER);
     }
 
+    public void finishActivity(View v) {
+        finish();
+    }
+
     public void initNativeSdkButton(View v) {
         Appodeal.setNativeCallbacks(new AppodealNativeCallbacks(this));
         Appodeal.initialize(this, APP_KEY, Appodeal.NATIVE, consent);
